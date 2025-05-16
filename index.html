@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Spiritual Cookie 3D</title>
   <style>
     body { margin: 0; background: #111; overflow: hidden; }
@@ -10,19 +9,22 @@
   </style>
 </head>
 <body>
-  <!-- Load Three.js FIRST -->
+  <!-- This div helps us delay script execution until THREE is ready -->
+  <div id="canvas-container"></div>
+
+  <!-- THREE.js via non-module CDN -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
 
-  <!-- Then run your animation code AFTER everything has loaded -->
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
+    // Wrap everything in a function to ensure THREE is loaded
+    window.onload = function () {
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
       camera.position.z = 10;
 
       const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
+      document.getElementById('canvas-container').appendChild(renderer.domElement);
 
       const light = new THREE.PointLight(0xffffff, 1, 100);
       light.position.set(0, 0, 10);
@@ -30,6 +32,14 @@
 
       const spheres = [];
       const geometry = new THREE.SphereGeometry(0.6, 32, 32);
+
+      function randVec3(scale = 0.02) {
+        return new THREE.Vector3(
+          (Math.random() - 0.5) * scale,
+          (Math.random() - 0.5) * scale,
+          (Math.random() - 0.5) * scale
+        );
+      }
 
       for (let i = 0; i < 15; i++) {
         const material = new THREE.MeshStandardMaterial({ color: 0xffffff * Math.random() });
@@ -41,14 +51,6 @@
         );
         scene.add(sphere);
         spheres.push({ mesh: sphere, velocity: randVec3(), rotation: randVec3(0.01) });
-      }
-
-      function randVec3(scale = 0.02) {
-        return new THREE.Vector3(
-          (Math.random() - 0.5) * scale,
-          (Math.random() - 0.5) * scale,
-          (Math.random() - 0.5) * scale
-        );
       }
 
       function animate() {
@@ -68,7 +70,7 @@
       }
 
       animate();
-    });
+    };
   </script>
 </body>
 </html>
