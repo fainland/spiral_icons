@@ -2,75 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Spiritual Cookie 3D</title>
-  <style>
-    body { margin: 0; background: #111; overflow: hidden; }
-    canvas { display: block; }
-  </style>
+  <title>Spiral Icons</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- This div helps us delay script execution until THREE is ready -->
-  <div id="canvas-container"></div>
+  <canvas id="spiralCanvas"></canvas>
 
-  <!-- THREE.js via non-module CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.160.1/build/three.min.js"></script>
+<script src="script.js"></script>
 
-  <script>
-    // Wrap everything in a function to ensure THREE is loaded
-    window.onload = function () {
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.z = 10;
-
-      const renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-      const light = new THREE.PointLight(0xffffff, 1, 100);
-      light.position.set(0, 0, 10);
-      scene.add(light);
-
-      const spheres = [];
-      const geometry = new THREE.SphereGeometry(0.6, 32, 32);
-
-      function randVec3(scale = 0.02) {
-        return new THREE.Vector3(
-          (Math.random() - 0.5) * scale,
-          (Math.random() - 0.5) * scale,
-          (Math.random() - 0.5) * scale
-        );
-      }
-
-      for (let i = 0; i < 15; i++) {
-        const material = new THREE.MeshStandardMaterial({ color: 0xffffff * Math.random() });
-        const sphere = new THREE.Mesh(geometry, material);
-        sphere.position.set(
-          (Math.random() - 0.5) * 20,
-          (Math.random() - 0.5) * 10,
-          (Math.random() - 0.5) * 20
-        );
-        scene.add(sphere);
-        spheres.push({ mesh: sphere, velocity: randVec3(), rotation: randVec3(0.01) });
-      }
-
-      function animate() {
-        requestAnimationFrame(animate);
-
-        spheres.forEach(obj => {
-          obj.mesh.position.add(obj.velocity);
-          obj.mesh.rotation.x += obj.rotation.x;
-          obj.mesh.rotation.y += obj.rotation.y;
-
-          ['x', 'y', 'z'].forEach(axis => {
-            if (Math.abs(obj.mesh.position[axis]) > 12) obj.velocity[axis] *= -1;
-          });
-        });
-
-        renderer.render(scene, camera);
-      }
-
-      animate();
-    };
-  </script>
 </body>
 </html>
