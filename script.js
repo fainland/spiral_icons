@@ -44,9 +44,15 @@ imagePaths.forEach((path, i) => {
   const sprite = new THREE.Sprite(material);
 
   const angle = i * (Math.PI * 2) / imagePaths.length * spiralTurns;
-  const x = spiralRadius * Math.cos(angle);
-  const y = (i - imagePaths.length / 2) * spacing;
-  const z = spiralRadius * Math.sin(angle);
+   const y = (i - imagePaths.length / 2) * spacing;
+// Taper factor based on vertical position (y)
+// Produces a narrower spiral at top and bottom
+const taper = 1 - Math.pow((y / (imagePaths.length * spacing / 2)), 2);
+
+const x = spiralRadius * taper * Math.cos(angle);
+const z = spiralRadius * taper * Math.sin(angle);
+
+  
 
   sprite.position.set(x, y, z);
   sprite.scale.set(1, 1, 1); // Uniform size
@@ -64,5 +70,30 @@ function animate() {
   requestAnimationFrame(animate);
   scene.rotation.y = rotationY;
   renderer.render(scene, camera);
+
+let closestSprite = null;
+let closestZ = Infinity;
+
+// Reset all icons to default scale
+scene.children.forEach(sprite => {
+  sprite.scale.set(1, 1, 1); // default
+});
+
+// Find the sprite closest to center (camera.z = 5)
+scene.children.forEach(sprite => {
+  const spriteZ = sprite.getWorldPosition(new THREE.Vector3()).z;
+  const distanceToCenter = Math.abs(camera.position.z - spriteZ);
+  if (distanceToCenter < closestZ) {
+    closestZ = distanceToCenter;
+    closestSprite = sprite;
+  }
+});
+
+// Enlarge and brighten the closest one
+if (closestSprite) {
+  closestSprite.scale.set(1.5, 1.5, 1.5); // visually distinct
+}
+
+
 }
 animate();
