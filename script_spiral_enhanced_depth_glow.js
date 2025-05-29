@@ -2,9 +2,27 @@
 // Enhanced carousel spiral with depth, glow, and variable spacing
 
 const imagePaths = [
-  'png/icon1.png', 'png/icon2.png', 'png/icon3.png', 'png/icon4.png',
-  'png/icon5.png', 'png/icon6.png', 'png/icon7.png', 'png/icon8.png',
-  'png/icon9.png', 'png/icon10.png', 'png/icon11.png', 'png/icon12.png'
+  'png/icon1.png',
+  'png/icon2.png',
+  'png/icon3.png',
+  'png/icon4.png',
+  'png/icon5.png',
+  'png/icon6.png',
+  'png/icon7.png',
+  'png/icon8.png',
+  'png/icon9.png',
+  'png/icon10.png',
+  'png/icon11.png',
+  'png/icon12.png', 
+  'png/icon13.png',
+  'png/icon14.png',
+  'png/icon15.png',
+  'png/icon16.png',
+  'png/icon17.png',
+  'png/icon18.png', 
+  'png/icon19.png',
+  'png/icon20.png',
+  'png/icon21.png'
 ];
 
 // Randomize
