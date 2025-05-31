@@ -18,3 +18,4 @@ if %errorlevel% neq 0 (
 echo Pushing to GitHub...
 git push origin main
 
+pause
