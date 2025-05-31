@@ -1,5 +1,5 @@
 
-// Asymmetrical tornado spiral with widened mid-section and selection zone
+// Tornado spiral with vertical compression and progressive sprite scaling/spacing
 
 const imagePaths = [
   'png/icon1.png', 'png/icon2.png', 'png/icon3.png', 'png/icon4.png',
@@ -25,20 +25,19 @@ let scrollOffset = 0;
 let targetOffset = 0;
 
 const NUM_SPRITES = 120;
-const Y_RANGE = 25;
+const Y_RANGE = 12; // smaller range for more vertical compression
 const sprites = [];
 const textures = imagePaths.map(path => new THREE.TextureLoader().load(path));
 
-// Use irregular vertical gaps to exaggerate tornado shape
+// Shape profile with more compression at the bottom and more spacing + scale at the top
 const spiralPositions = [];
 for (let i = 0; i < NUM_SPRITES; i++) {
   const t = i / (NUM_SPRITES - 1); // 0 to 1
-  const y = Y_RANGE * (0.5 - Math.pow(t, 1.2)); // steeper bottom taper
+  const easedT = Math.pow(t, 1.5); // more tightly packed lower part
 
-  // Radius peaks near 0.4 then flattens (the "bulge" where the highlight sprite sits)
-  const bulgeCenter = 0.4;
-  const bulgeSpread = 0.3;
-  const radius = 1.2 + 3.5 * Math.exp(-Math.pow((t - bulgeCenter) / bulgeSpread, 2));
+  const y = Y_RANGE * (0.5 - easedT); // compressed vertical layout
+
+  const radius = 1.0 + 3.2 * Math.exp(-Math.pow((t - 0.4) / 0.25, 2)); // large bulge around center
 
   const turns = 5;
   const angle = t * Math.PI * 2 * turns;
@@ -49,7 +48,7 @@ for (let i = 0; i < NUM_SPRITES; i++) {
   spiralPositions.push({ x, y, z });
 }
 
-// Create the sprite shells
+// Create sprite objects
 for (let i = 0; i < NUM_SPRITES; i++) {
   const material = new THREE.SpriteMaterial({ map: textures[i % textures.length] });
   const sprite = new THREE.Sprite(material);
@@ -57,7 +56,7 @@ for (let i = 0; i < NUM_SPRITES; i++) {
   sprites.push(sprite);
 }
 
-// Handle scroll input
+// Scroll wheel interaction
 window.addEventListener('wheel', (e) => {
   if (e.deltaY > 0) {
     targetOffset += 1;
@@ -66,7 +65,7 @@ window.addEventListener('wheel', (e) => {
   }
 });
 
-// Animate the spiral
+// Animate spiral position and scaling
 function animate() {
   requestAnimationFrame(animate);
   scrollOffset += (targetOffset - scrollOffset) * 0.1;
@@ -81,11 +80,13 @@ function animate() {
     const pos = spiralPositions[i];
     sprites[i].position.set(pos.x, pos.y, pos.z);
 
-    const scale = 1.0 - Math.abs(relativeIndex) * 0.01;
+    const t = i / (NUM_SPRITES - 1);
+    const scaleBase = 0.7 + 1.5 * Math.pow(t, 2); // gradually increase sprite size from bottom to top
+    const scale = scaleBase - Math.abs(relativeIndex) * 0.01;
     sprites[i].scale.set(scale, scale, scale);
 
     if (Math.abs(relativeIndex) < 0.3) {
-      sprites[i].scale.set(2.0, 2.0, 2.0);
+      sprites[i].scale.set(scale * 1.4, scale * 1.4, scale * 1.4);
       sprites[i].material.color.set(0xffffff);
     } else {
       sprites[i].material.color.set(0x888888);
@@ -96,7 +97,7 @@ function animate() {
 }
 animate();
 
-// Handle selection
+// Log selection on click
 window.addEventListener('click', () => {
   const selectedIndex = Math.round(scrollOffset) % imagePaths.length;
   const image = imagePaths[((selectedIndex % imagePaths.length) + imagePaths.length) % imagePaths.length];
